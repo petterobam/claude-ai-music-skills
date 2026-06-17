@@ -39,19 +39,91 @@ Concept to released album. You generate on Suno, everything else happens in the 
 
 ## Install
 
+Install the whole repository as one Claude skill. The directory you copy must contain the root `SKILL.md`.
+
 ```bash
 git clone https://github.com/bitwize-music-studio/claude-ai-music-skills.git ~/.claude/skills/ai-music-skills
 ```
 
-Or copy this repository directory directly into your Claude skills directory:
+To test this unmerged development branch:
 
 ```bash
-cp -R claude-ai-music-skills ~/.claude/skills/ai-music-skills
+git clone -b codex/repository-skill-bundle https://github.com/petterobam/claude-ai-music-skills.git ~/.claude/skills/ai-music-skills
 ```
 
-The root [SKILL.md](SKILL.md) is the single skill entry point. It routes work to bundled modules in `skills/` and resolves `reference/`, `templates/`, `tools/`, `genres/`, `config/`, and `servers/` from the same copied directory.
+Or copy a local checkout directly:
 
-After installing, ask Claude to use the `ai-music-skills` skill to run setup and configuration. The setup flow detects your environment and installs optional Python dependencies for MCP, mastering, cloud uploads, and document hunting.
+```bash
+mkdir -p ~/.claude/skills
+rsync -a --delete --delete-excluded \
+  --exclude .git \
+  --exclude .venv \
+  --exclude .pytest_cache \
+  --exclude .mypy_cache \
+  --exclude .ruff_cache \
+  --exclude .coverage \
+  --exclude coverage-html \
+  --exclude .DS_Store \
+  --exclude __pycache__ \
+  --exclude AGENTS.md \
+  ./ ~/.claude/skills/ai-music-skills/
+```
+
+The installed layout should look like this:
+
+```text
+~/.claude/skills/ai-music-skills/
+├── SKILL.md
+├── skills/
+├── reference/
+├── templates/
+├── tools/
+├── genres/
+├── config/
+└── servers/
+```
+
+The root [SKILL.md](SKILL.md) is the single skill entry point. It routes work to bundled modules in `skills/` and resolves `reference/`, `templates/`, `tools/`, `genres/`, `config/`, and `servers/` from the same copied directory. You do not need the old Claude plugin marketplace install path.
+
+After installing, restart Claude so it reloads skills, then ask Claude to use the `ai-music-skills` skill to run setup and configuration. The setup flow detects your environment and installs optional Python dependencies for MCP, mastering, cloud uploads, and document hunting.
+
+In a Claude prompt, invoke the skill as:
+
+```text
+/ai-music-skills
+Show me the available workflow modules and tell me how to start a new album.
+```
+
+### Update
+
+```bash
+cd ~/.claude/skills/ai-music-skills
+git pull
+```
+
+If you installed by copying a local checkout, rerun the `rsync` command above.
+
+### Smoke Test
+
+```bash
+test -f ~/.claude/skills/ai-music-skills/SKILL.md
+test -d ~/.claude/skills/ai-music-skills/reference
+test -d ~/.claude/skills/ai-music-skills/templates
+test -d ~/.claude/skills/ai-music-skills/tools
+```
+
+Then ask Claude:
+
+```text
+/ai-music-skills
+Show me the available workflow modules and tell me how to start a new album.
+```
+
+For Claude Code CLI, if `/ai-music-skills` returns `Unknown command`, your CLI session is not loading the local skills registry. Restart Claude Code or load the local skills bridge/plugin used by your setup. On this machine, the non-interactive smoke test is:
+
+```bash
+claude -p --plugin-dir ~/.claude/plugins/skills $'/ai-music-skills\nDo not run tools. Tell me which module starts a new album.'
+```
 
 **Platform**: Linux or macOS (Windows users: use WSL). Python 3.10+ for the MCP server and audio tools.
 
