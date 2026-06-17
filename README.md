@@ -2,7 +2,7 @@
 
 I love music but never learned an instrument. AI became the creative outlet that was always out of reach. This project started as a way to go deep on Claude Code plugin architecture, agentic workflows, multi-model orchestration, and MCP tooling. Music was the domain because it was personal.
 
-What it actually does: a Claude Code plugin that turns a conversation into a full album production pipeline. You describe what you want to make, and it handles concept development, lyrics, [Suno](https://suno.com) prompts (an AI music generation platform), audio mastering, and release prep — with quality gates and source verification at every stage.
+What it actually does: a Claude skill repository that turns a conversation into a full album production pipeline. You describe what you want to make, and it handles concept development, lyrics, [Suno](https://suno.com) prompts (an AI music generation platform), audio mastering, and release prep — with quality gates and source verification at every stage.
 
 ![Version](https://img.shields.io/github/v/release/bitwize-music-studio/claude-ai-music-skills?label=version&color=blue)
 
@@ -40,11 +40,18 @@ Concept to released album. You generate on Suno, everything else happens in the 
 ## Install
 
 ```bash
-/plugin marketplace add bitwize-music-studio/claude-ai-music-skills
-/plugin install bitwize-music@claude-ai-music-skills
+git clone https://github.com/bitwize-music-studio/claude-ai-music-skills.git ~/.claude/skills/ai-music-skills
 ```
 
-Then run `/bitwize-music:setup` to detect your environment and install dependencies. Run `/bitwize-music:configure` to set your artist name and workspace paths.
+Or copy this repository directory directly into your Claude skills directory:
+
+```bash
+cp -R claude-ai-music-skills ~/.claude/skills/ai-music-skills
+```
+
+The root [SKILL.md](SKILL.md) is the single skill entry point. It routes work to bundled modules in `skills/` and resolves `reference/`, `templates/`, `tools/`, `genres/`, `config/`, and `servers/` from the same copied directory.
+
+After installing, ask Claude to use the `ai-music-skills` skill to run setup and configuration. The setup flow detects your environment and installs optional Python dependencies for MCP, mastering, cloud uploads, and document hunting.
 
 **Platform**: Linux or macOS (Windows users: use WSL). Python 3.10+ for the MCP server and audio tools.
 
@@ -52,11 +59,11 @@ Then run `/bitwize-music:setup` to detect your environment and install dependenc
 
 ## Architecture
 
-This is where the engineering lives. The plugin is a case study in how far you can push Claude Code's plugin system.
+This is where the engineering lives. The skill is a case study in how far you can push Claude's skill system with bundled workflows, references, templates, and tools.
 
-### Skill System (53 Skills)
+### Skill System (One Skill, 52 Routed Workflow Modules)
 
-Each skill is a self-contained markdown file with a YAML frontmatter that declares its model, description, and when it should activate. Skills range from simple clipboard operations to multi-step creative workflows. Claude routes to skills automatically based on context, or you invoke them directly with `/bitwize-music:<name>`.
+The repository root is one installable skill. The root `SKILL.md` routes work to internal modules under `skills/`, from simple clipboard operations to multi-step creative workflows. Historical/about material may remain in the repository, but it is not part of the routed production workflow.
 
 The lyric-writer knows prosody rules, rhyme scheme analysis, and Suno's pronunciation quirks. The mastering-engineer knows loudness targets per platform and genre-specific EQ curves. The researcher coordinates parallel sub-agents across 10 domain specializations.
 
@@ -72,13 +79,13 @@ Skills declare which Claude model they need. Creative work that directly impacts
 | Reasoning | Sonnet 4.6 | 30 | Research coordination, pronunciation analysis, most workflows |
 | Mechanical | Haiku 4.5 | 16 | Imports, validation, clipboard, help — speed over creativity |
 
-This project pushes Claude Code hard — multi-agent research, real-time audio analysis, sub-agent orchestration across model tiers. It works best on the Max plan. The standard Pro plan will hit rate limits during multi-track sessions.
+This project pushes Claude hard — multi-agent research, real-time audio analysis, sub-agent orchestration across model tiers. It works best on higher-capacity plans. Smaller plans may hit rate limits during multi-track sessions.
 
 See [reference/model-strategy.md](reference/model-strategy.md) for per-skill rationale.
 
 ### MCP Server (80+ Tools)
 
-A Python MCP server exposes 80+ tools for instant state queries, audio analysis, lyrics processing, and database operations. The server is the plugin's nervous system — skills call MCP tools instead of reading files directly, which keeps responses fast and state consistent.
+A Python MCP server exposes 80+ tools for instant state queries, audio analysis, lyrics processing, and database operations. The server is the workflow's nervous system — modules call MCP tools instead of reading files directly when the server is available, which keeps responses fast and state consistent.
 
 Key tool categories:
 - **State management** — album/track lookups, session context, cache rebuild
@@ -113,7 +120,8 @@ Nothing ships without passing gates:
 ## Project Structure
 
 ```
-skills/              53 skill definitions (markdown + YAML frontmatter)
+SKILL.md             Single installable skill entry point
+skills/              Routed workflow modules and their local references
 servers/             MCP server (Python, 80+ tools)
 tools/               Audio mastering, promo videos, sheet music, cloud uploads
 reference/           46+ docs — Suno guides, mastering workflows, genre references
@@ -129,7 +137,7 @@ config/              Example config and setup docs
 
 | Topic | Location |
 |-------|----------|
-| All 53 skills | [docs/skills.md](docs/skills.md) |
+| Routed workflow modules | [docs/skills.md](docs/skills.md) |
 | Configuration | [docs/configuration.md](docs/configuration.md) |
 | Troubleshooting | [docs/troubleshooting.md](docs/troubleshooting.md) |
 | Changelog | [CHANGELOG.md](CHANGELOG.md) |

@@ -1,11 +1,11 @@
 ---
 name: help
-description: Shows available skills, common workflows, and quick reference for the plugin. Use when the user asks for help, what skills are available, or how to do something.
+description: Shows available workflow modules, common workflows, and quick reference for the AI music skill. Use when the user asks for help, what modules are available, or how to do something.
 model: haiku
 allowed-tools: []
 ---
 
-## bitwize-music Plugin Help
+## AI Music Skills Help
 
 Display this help information to the user in a clear, organized format.
 
@@ -13,10 +13,9 @@ Display this help information to the user in a clear, organized format.
 
 ### Getting Started
 
-**New to the plugin?**
+**New to the workflow?**
 - `/bitwize-music:tutorial` - Interactive guided album creation
 - `/bitwize-music:configure` - Set up configuration file
-- `/bitwize-music:about` - About bitwize and this plugin
 
 **Resume existing work:**
 - `/bitwize-music:resume <album-name>` - Find an album and see status/next steps
@@ -79,7 +78,6 @@ Display this help information to the user in a clear, organized format.
 - `/bitwize-music:configure` - Edit plugin configuration
 - `/bitwize-music:test` - Run automated tests
 - `/bitwize-music:help` - Show this help (you are here!)
-- `/bitwize-music:about` - About bitwize and the plugin
 
 ---
 
